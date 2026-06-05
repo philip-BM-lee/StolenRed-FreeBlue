@@ -20,7 +20,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+KR:wght@400;700;900&display=swap');
   * { margin:0; padding:0; box-sizing:border-box; }
-  :root { --red:#E60028; --blue:#0099CC; --paper:#ffffff; --ink:#15151c; --muted:#666; --line:#e6e6ea; }
+  :root { --red:#FF0063; --blue:#65CCFF; --paper:#ffffff; --ink:#15151c; --muted:#666; --line:#e6e6ea; }
   body { font-family:'Noto Sans KR',sans-serif; background:var(--paper); color:var(--ink); min-height:100vh; overflow-x:hidden; }
   .wrap { position:relative; z-index:1; max-width:640px; margin:0 auto; padding:28px 20px 60px; }
   header { margin-bottom:24px; }
@@ -79,6 +79,11 @@
   .meaning .cm.blue .en{color:var(--blue);}
   .meaning .cm .t{font-weight:900;font-size:14px;margin:8px 0 4px;color:var(--ink);}
   .meaning .cm .d{font-size:12px;color:#666;line-height:1.5;}
+  .meaning .cm .code{font-family:monospace;font-size:13px;letter-spacing:1px;color:#999;margin:2px 0 6px;}
+  .meaning .cm .code b{color:var(--ink);font-weight:900;}
+  .meaning .hidden-date{margin:6px 0 18px;padding:14px 16px;background:#f7f7fa;border:1px dashed var(--line);border-radius:10px;font-size:13px;color:#555;line-height:1.6;}
+  .meaning .hidden-date b{color:var(--ink);}
+  .meaning .hidden-date .hr{color:var(--red);} .meaning .hidden-date .hb{color:var(--blue);}
   .timeline{margin-top:8px;background:#f6f6f9;border:1px solid var(--line);border-radius:12px;padding:18px 16px;}
   .timeline .ev{display:flex;gap:12px;padding:10px 0;}
   .timeline .ev:not(:last-child){border-bottom:1px solid var(--line);}
@@ -98,8 +103,8 @@
     <p class="slogan-kr"><span class="r">빼앗긴 한 표</span> · <span class="b">끌려간 자유</span></p>
     <p class="sub">사진을 올리면 <b>두 가지 색</b>으로 변환돼요. 인스타·카톡 프로필에 그대로 쓰세요. 모든 처리는 <b>이 기기 안에서만</b> 일어나고, 사진은 어디로도 전송되지 않아요.</p>
     <div class="hexbar">
-      <div class="chip r">#FF0033</div>
-      <div class="chip b">#00CCFF</div>
+      <div class="chip r">#FF0063</div>
+      <div class="chip b">#65CCFF</div>
     </div>
   </header>
 
@@ -150,13 +155,18 @@
       <div class="cm red">
         <div class="en">STOLEN RED</div>
         <div class="t">빼앗긴 한 표</div>
+        <div class="code">#FF00<b>63</b></div>
         <div class="d">투표용지의 색. 부족 사태로 침해당한 참정권, 행사되지 못한 한 표.</div>
       </div>
       <div class="cm blue">
         <div class="en">FREE BLUE</div>
         <div class="t">끌려간 자유</div>
+        <div class="code">#<b>65</b>CCFF</div>
         <div class="d">강제로 연행된 시민. 짓밟힌 집회의 자유와 시민의 권리.</div>
       </div>
+    </div>
+    <div class="hidden-date">
+      색 코드에 날짜를 새겼습니다 — <b>#FF00<span class="hr">63</span></b> 은 <b>6·3</b>, <b>#<span class="hb">65</span>CCFF</b> 는 <b>6·5</b>. 잊지 않겠다는 표시입니다.
     </div>
     <div class="timeline">
       <div class="ev">
@@ -185,7 +195,7 @@
   const ctx=canvas.getContext('2d',{willReadFrequently:true});
   const resultImg=document.getElementById('resultImg');
   const savehint=document.getElementById('savehint');
-  const RED=[255,0,51], BLUE=[0,204,255];
+  const RED=[255,0,99], BLUE=[101,204,255];
   let img=null, mode='soft', bri=30, con=1.5, amp=1.0;
 
   fileInput.addEventListener('change',e=>loadFile(e.target.files[0]));
@@ -226,7 +236,7 @@
 
     let cLo=RED, cHi=BLUE;
     if(mode==='br'){ cLo=BLUE; cHi=RED; }
-    if(mode==='soft'){ cLo=[120,20,45]; cHi=[120,205,235]; } // 채도 낮춘 부드러운 양끝
+    if(mode==='soft'){ cLo=[130,30,75]; cHi=[150,210,240]; } // 채도 낮춘 부드러운 양끝 (인물용)
 
     for(let i=0;i<d.length;i+=4){
       const r0=d[i], g0=d[i+1], b0=d[i+2];
