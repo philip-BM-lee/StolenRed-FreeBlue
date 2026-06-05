@@ -116,18 +116,22 @@
       <div class="row">
         <div class="label"><span>색 모드</span></div>
         <div class="modes" id="modes">
-          <button data-mode="rb" class="active">레드→블루</button>
+          <button data-mode="soft" class="active">인물용</button>
+          <button data-mode="rb">레드→블루</button>
           <button data-mode="br">블루→레드</button>
-          <button data-mode="contrast">고대비</button>
         </div>
       </div>
       <div class="row">
-        <div class="label"><span>밝기</span><span id="briVal">0</span></div>
-        <input type="range" id="bri" min="-80" max="80" value="0">
+        <div class="label"><span>강도 (원본 섞기)</span><span id="ampVal">100%</span></div>
+        <input type="range" id="amp" min="0" max="100" value="100">
+      </div>
+      <div class="row">
+        <div class="label"><span>밝기</span><span id="briVal">8</span></div>
+        <input type="range" id="bri" min="-80" max="80" value="8">
       </div>
       <div class="row">
         <div class="label"><span>대비</span><span id="conVal">1.0</span></div>
-        <input type="range" id="con" min="50" max="220" value="100">
+        <input type="range" id="con" min="50" max="220" value="95">
       </div>
     </div>
     <div class="actions">
@@ -182,7 +186,7 @@
   const resultImg=document.getElementById('resultImg');
   const savehint=document.getElementById('savehint');
   const RED=[255,0,51], BLUE=[0,204,255];
-  let img=null, mode='rb', bri=0, con=1.0;
+  let img=null, mode='soft', bri=8, con=0.95, amp=1.0;
 
   fileInput.addEventListener('change',e=>loadFile(e.target.files[0]));
   ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
@@ -219,16 +223,28 @@
     ctx.drawImage(img,sx,sy,s,s,0,0,size,size);
     const data=ctx.getImageData(0,0,size,size);
     const d=data.data;
-    let cLo=RED,cHi=BLUE;
-    if(mode==='br'){cLo=BLUE;cHi=RED;}
-    if(mode==='contrast'){cLo=[10,10,18];cHi=BLUE;}
+
+    let cLo=RED, cHi=BLUE;
+    if(mode==='br'){ cLo=BLUE; cHi=RED; }
+    if(mode==='soft'){ cLo=[120,20,45]; cHi=[120,205,235]; } // 채도 낮춘 부드러운 양끝
+
     for(let i=0;i<d.length;i+=4){
-      let lum=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-      lum=(lum-128)*con+128+bri; lum=Math.max(0,Math.min(255,lum));
+      const r0=d[i], g0=d[i+1], b0=d[i+2];
+      let lum=0.299*r0+0.587*g0+0.114*b0;
+      lum=(lum-128)*con+128+bri;
+      lum=Math.max(0,Math.min(255,lum));
       const t=lum/255;
-      d[i]=cLo[0]+(cHi[0]-cLo[0])*t;
-      d[i+1]=cLo[1]+(cHi[1]-cLo[1])*t;
-      d[i+2]=cLo[2]+(cHi[2]-cLo[2])*t;
+
+      let nr, ng, nb;
+      // 듀오톤: 두 색 사이 보간
+      nr = cLo[0]+(cHi[0]-cLo[0])*t;
+      ng = cLo[1]+(cHi[1]-cLo[1])*t;
+      nb = cLo[2]+(cHi[2]-cLo[2])*t;
+
+      // 강도(amp): 원본 픽셀과 섞기 → 1.0이면 완전 듀오톤, 낮추면 원본 피부톤이 비침
+      d[i]   = r0 + (nr-r0)*amp;
+      d[i+1] = g0 + (ng-g0)*amp;
+      d[i+2] = b0 + (nb-b0)*amp;
     }
     ctx.putImageData(data,0,0);
   }
@@ -237,9 +253,12 @@
   document.getElementById('modes').addEventListener('click',e=>{
     if(e.target.tagName!=='BUTTON')return;
     document.querySelectorAll('#modes button').forEach(b=>b.classList.remove('active'));
-    e.target.classList.add('active'); mode=e.target.dataset.mode; render(); syncImg();
+    e.target.classList.add('active'); mode=e.target.dataset.mode;
+    render(); syncImg();
   });
-  const briEl=document.getElementById('bri'),conEl=document.getElementById('con');
+  const briEl=document.getElementById('bri'),conEl=document.getElementById('con'),ampEl=document.getElementById('amp');
+  ampEl.addEventListener('input',e=>{amp=+e.target.value/100;document.getElementById('ampVal').textContent=e.target.value+'%';render();});
+  ampEl.addEventListener('change',syncImg);
   briEl.addEventListener('input',e=>{bri=+e.target.value;document.getElementById('briVal').textContent=bri;render();});
   conEl.addEventListener('input',e=>{con=+e.target.value/100;document.getElementById('conVal').textContent=con.toFixed(1);render();});
   briEl.addEventListener('change',syncImg);
@@ -261,10 +280,11 @@
   });
   document.getElementById('reset').addEventListener('click',()=>{
     img=null; stage.classList.remove('show'); drop.style.display='block';
-    fileInput.value=''; bri=0; con=1.0; mode='rb';
-    briEl.value=0; conEl.value=100;
-    document.getElementById('briVal').textContent='0';
+    fileInput.value=''; bri=8; con=0.95; mode='soft'; amp=1.0;
+    briEl.value=8; conEl.value=95; ampEl.value=100;
+    document.getElementById('briVal').textContent='8';
     document.getElementById('conVal').textContent='1.0';
+    document.getElementById('ampVal').textContent='100%';
     savehint.classList.remove('show');
     document.querySelectorAll('#modes button').forEach((b,i)=>b.classList.toggle('active',i===0));
   });
