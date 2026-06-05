@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STOLEN RED, FREE BLUE — 6·3 / 6·5 저항</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+KR:wght@400;700;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root { --red:#E60028; --blue:#0099CC; --paper:#ffffff; --ink:#15151c; --muted:#666; --line:#e6e6ea; }
+  body { font-family:'Noto Sans KR',sans-serif; background:var(--paper); color:var(--ink); min-height:100vh; overflow-x:hidden; }
+  .wrap { position:relative; z-index:1; max-width:640px; margin:0 auto; padding:28px 20px 60px; }
+  header { margin-bottom:24px; }
+  .kicker { display:inline-block; font-size:11px; letter-spacing:3px; font-weight:700; color:var(--blue); border:1px solid var(--blue); padding:4px 10px; margin-bottom:14px; }
+  h1 { font-family:'Anton',sans-serif; font-size:clamp(40px,12vw,72px); line-height:0.92; letter-spacing:1px; text-transform:uppercase; }
+  h1 .r{color:var(--red);} h1 .b{color:var(--blue);}
+  .slogan-kr { margin-top:12px; font-size:15px; font-weight:700; color:#444; letter-spacing:0.5px; }
+  .slogan-kr .r{color:var(--red);} .slogan-kr .b{color:var(--blue);}
+  .sub { margin-top:14px; font-size:14px; color:#555; line-height:1.6; }
+  .sub b{color:var(--ink);}
+  .hexbar { display:flex; gap:8px; margin-top:14px; }
+  .hexbar .chip { flex:1; padding:10px; border-radius:6px; font-size:12px; font-weight:700; text-align:center; letter-spacing:1px; }
+  .chip.r{background:var(--red);color:#fff;} .chip.b{background:var(--blue);color:#fff;}
+  .drop { display:block; margin-top:24px; border:2px dashed #c4c4cc; border-radius:14px; padding:46px 20px; text-align:center; cursor:pointer; transition:.2s; background:#f6f6f9; }
+  .drop:hover,.drop.drag{ border-color:var(--blue); background:#eef8fc; }
+  .drop .big{font-size:17px;font-weight:700;color:var(--ink);}
+  .drop .small{font-size:13px;color:#888;margin-top:6px;}
+  .drop .ico{font-size:34px;margin-bottom:10px;color:var(--blue);}
+  .stage{margin-top:24px;display:none;} .stage.show{display:block;}
+  .canvas-box{ position:relative; width:100%; aspect-ratio:1/1; border-radius:14px; overflow:hidden; background:#000; box-shadow:0 0 0 3px var(--red),6px 6px 0 var(--blue); }
+  canvas{ width:100%; height:100%; display:none; }
+  /* 길게 눌러 저장을 위해 결과는 <img>로 보여줌 — iOS는 canvas 길게누르기 저장이 안 됨 */
+  .result-img{
+    width:100%; height:100%; display:block;
+    -webkit-touch-callout: default;   /* 길게 누르기 메뉴 허용 */
+    -webkit-user-select: none; user-select:none;
+    touch-action: manipulation;
+  }
+  .controls{margin-top:22px;} .row{margin-bottom:18px;}
+  .row .label{ display:flex; justify-content:space-between; font-size:12px; font-weight:700; letter-spacing:1px; color:#555; margin-bottom:8px; text-transform:uppercase; }
+  .modes{display:flex;gap:8px;}
+  .modes button{ flex:1; padding:11px 6px; border:1.5px solid var(--line); border-radius:8px; font-family:'Noto Sans KR',sans-serif; font-weight:700; font-size:13px; cursor:pointer; transition:.15s; background:#f2f2f5; color:#777; }
+  .modes button.active{ color:#fff; border-color:transparent; background:linear-gradient(135deg,var(--red),var(--blue)); }
+  input[type=range]{ width:100%; -webkit-appearance:none; appearance:none; height:5px; border-radius:5px; background:linear-gradient(90deg,var(--red),var(--blue)); outline:none; }
+  input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%; background:#fff; cursor:pointer; border:3px solid var(--blue); box-shadow:0 1px 4px rgba(0,0,0,.25); }
+  input[type=range]::-moz-range-thumb{ width:20px; height:20px; border-radius:50%; background:#fff; cursor:pointer; border:3px solid var(--blue); }
+  .actions{display:flex;gap:10px;margin-top:24px;}
+  .btn{ flex:1; padding:15px; border:none; border-radius:10px; font-family:'Noto Sans KR',sans-serif; font-weight:900; font-size:15px; cursor:pointer; transition:.15s; }
+  .btn-dl{background:var(--blue);color:#fff;}
+  .btn-dl:hover{transform:translateY(-2px);}
+  .btn-reset{ background:#fff; color:#777; border:1.5px solid var(--line); flex:0 0 auto; padding:0 20px; }
+  .btn-reset:hover{color:var(--ink);border-color:#999;}
+  .savehint{ display:none; margin-top:14px; padding:14px; background:#eef8fc; border:1px solid #b9e4f3; border-radius:10px; font-size:13px; color:#0a6b8a; line-height:1.6; }
+  .savehint.show{display:block;} .savehint b{color:#063e52;}
+  .meaning{margin-top:38px;border-top:2px solid var(--red);padding-top:24px;}
+  .meaning h2{font-family:'Anton',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:16px;text-transform:uppercase;color:var(--ink);}
+  .meaning h2 .b{color:var(--blue);}
+  .meaning p{font-size:14px;color:#444;line-height:1.8;margin-bottom:16px;}
+  .meaning p b{color:var(--ink);}
+  .meaning .color-meaning{display:flex;gap:12px;margin:18px 0;}
+  .meaning .cm{flex:1;padding:18px 12px;border-radius:10px;text-align:center;}
+  .meaning .cm.red{background:rgba(230,0,40,0.07);border:1.5px solid var(--red);}
+  .meaning .cm.blue{background:rgba(0,153,204,0.07);border:1.5px solid var(--blue);}
+  .meaning .cm .en{font-family:'Anton',sans-serif;font-size:20px;letter-spacing:1px;}
+  .meaning .cm.red .en{color:var(--red);}
+  .meaning .cm.blue .en{color:var(--blue);}
+  .meaning .cm .t{font-weight:900;font-size:14px;margin:8px 0 4px;color:var(--ink);}
+  .meaning .cm .d{font-size:12px;color:#666;line-height:1.5;}
+  .timeline{margin-top:8px;background:#f6f6f9;border:1px solid var(--line);border-radius:12px;padding:18px 16px;}
+  .timeline .ev{display:flex;gap:12px;padding:10px 0;}
+  .timeline .ev:not(:last-child){border-bottom:1px solid var(--line);}
+  .timeline .date{flex:0 0 56px;font-family:'Anton',sans-serif;font-size:18px;color:var(--red);}
+  .timeline .ev.b2 .date{color:var(--blue);}
+  .timeline .txt{font-size:13px;color:#555;line-height:1.55;}
+  .timeline .txt b{color:var(--ink);}
+  .note{margin-top:30px;font-size:12px;color:#888;line-height:1.7;border-top:1px solid var(--line);padding-top:16px;}
+  .note b{color:#555;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="kicker">SOLIDARITY DUOTONE · 6·3 / 6·5</span>
+    <h1><span class="r">STOLEN RED</span><br><span class="b">FREE BLUE</span></h1>
+    <p class="slogan-kr"><span class="r">빼앗긴 한 표</span> · <span class="b">끌려간 자유</span></p>
+    <p class="sub">사진을 올리면 <b>두 가지 색</b>으로 변환돼요. 인스타·카톡 프로필에 그대로 쓰세요. 모든 처리는 <b>이 기기 안에서만</b> 일어나고, 사진은 어디로도 전송되지 않아요.</p>
+    <div class="hexbar">
+      <div class="chip r">#FF0033</div>
+      <div class="chip b">#00CCFF</div>
+    </div>
+  </header>
+
+  <label class="drop" id="drop">
+    <div class="ico">⬆</div>
+    <div class="big">사진 선택 / 끌어다 놓기</div>
+    <div class="small">JPG · PNG · HEIC · 최대 25MB</div>
+    <input type="file" id="file" accept="image/*" hidden>
+  </label>
+
+  <div class="stage" id="stage">
+    <div class="canvas-box"><canvas id="canvas"></canvas><img id="resultImg" class="result-img" alt="듀오톤 변환 결과 — 길게 눌러 저장하세요"></div>
+    <div class="controls">
+      <div class="row">
+        <div class="label"><span>색 모드</span></div>
+        <div class="modes" id="modes">
+          <button data-mode="rb" class="active">레드→블루</button>
+          <button data-mode="br">블루→레드</button>
+          <button data-mode="contrast">고대비</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="label"><span>밝기</span><span id="briVal">0</span></div>
+        <input type="range" id="bri" min="-80" max="80" value="0">
+      </div>
+      <div class="row">
+        <div class="label"><span>대비</span><span id="conVal">1.0</span></div>
+        <input type="range" id="con" min="50" max="220" value="100">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-dl" id="dl">⤓ 저장 / 공유 (HD)</button>
+      <button class="btn btn-reset" id="reset">↺ 다시</button>
+    </div>
+    <div class="savehint" id="savehint">
+      <b>저장이 안 되나요?</b> 가장 확실한 방법은 위 <b>결과 이미지를 길게 눌러 "사진 저장"</b> 입니다. 그래도 안 되면 인스타·카톡 인앱 브라우저일 수 있어요 — 우측 상단 ··· → "사파리/크롬에서 열기"로 연 뒤 다시 시도하세요.
+    </div>
+  </div>
+
+  <section class="meaning">
+    <h2>왜 이 <span class="b">색</span>인가</h2>
+    <p>이 프로필은 <b>2026년 6·3 지방선거 투표용지 부족 사태</b>와, 이틀 뒤 <b>6·5 잠실7동 유권자·시민 강제 연행</b>에 대한 저항의 표시입니다. 색 하나하나에 의미를 담았습니다.</p>
+    <div class="color-meaning">
+      <div class="cm red">
+        <div class="en">STOLEN RED</div>
+        <div class="t">빼앗긴 한 표</div>
+        <div class="d">투표용지의 색. 부족 사태로 침해당한 참정권, 행사되지 못한 한 표.</div>
+      </div>
+      <div class="cm blue">
+        <div class="en">FREE BLUE</div>
+        <div class="t">끌려간 자유</div>
+        <div class="d">강제로 연행된 시민. 짓밟힌 집회의 자유와 시민의 권리.</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="ev">
+        <div class="date">6·3</div>
+        <div class="txt"><b>투표용지 부족 사태.</b> 서울 송파·강남·광진 등 투표소 14곳에서 용지가 동남. 잠실7동은 투표 시간이 밤 10시까지 연장됨.</div>
+      </div>
+      <div class="ev b2">
+        <div class="date">6·5</div>
+        <div class="txt"><b>강제 연행.</b> 35시간 봉쇄 끝에 경찰 기동대 약 1,000명 투입. 인간 띠를 이룬 시민들을 한 명씩 끌어냄. 부상자 발생.</div>
+      </div>
+    </div>
+    <p style="margin-top:18px;">색에 옳고 그름은 없습니다. 다만 같은 색이 타임라인에 늘어날 때, <b>"나도 지켜보고 있다"</b>는 메시지가 됩니다. 침묵하지 않겠다는 약속입니다.</p>
+  </section>
+
+  <p class="note">
+    <b>쓰는 법.</b> ① 사진 선택 → ② 색·밝기·대비 조절 → ③ 저장/공유(또는 길게 눌러 저장) → ④ 인스타·카톡 프로필로 설정.<br><br>
+    <b>운동으로 퍼뜨리려면</b> 이 링크와 슬로건 <b>#STOLEN_RED #FREE_BLUE</b>를 함께 공유하세요. 같은 색 프로필이 늘어날수록 눈에 띕니다.
+  </p>
+</div>
+
+<script>
+  const fileInput=document.getElementById('file');
+  const drop=document.getElementById('drop');
+  const stage=document.getElementById('stage');
+  const canvas=document.getElementById('canvas');
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  const resultImg=document.getElementById('resultImg');
+  const savehint=document.getElementById('savehint');
+  const RED=[255,0,51], BLUE=[0,204,255];
+  let img=null, mode='rb', bri=0, con=1.0;
+
+  fileInput.addEventListener('change',e=>loadFile(e.target.files[0]));
+  ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+  drop.addEventListener('drop',e=>{if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);});
+  window.addEventListener('dragover',e=>e.preventDefault());
+  window.addEventListener('drop',e=>{ if(!drop.contains(e.target)) e.preventDefault(); });
+
+  function loadFile(f){
+    if(!f)return;
+    if(!f.type.startsWith('image/') && !/\.(heic|heif)$/i.test(f.name)){
+      alert('이미지 파일만 올릴 수 있어요.'); return;
+    }
+    if(f.size > 25*1024*1024){
+      alert('파일이 너무 커요. 25MB 이하 이미지를 사용해 주세요.'); return;
+    }
+    const reader=new FileReader();
+    reader.onerror=()=>alert('파일을 읽지 못했어요. 다른 사진으로 다시 시도해 주세요.');
+    reader.onload=ev=>{
+      const im=new Image();
+      im.onload=()=>{img=im;sizeCanvas();render();syncImg();stage.classList.add('show');drop.style.display='none';};
+      im.onerror=()=>alert('이 형식은 이 브라우저에서 열 수 없어요. (HEIC는 아이폰 사파리에서만 지원돼요) JPG·PNG로 시도해 주세요.');
+      im.src=ev.target.result;
+    };
+    reader.readAsDataURL(f);
+  }
+  function sizeCanvas(){const size=Math.min(1080,Math.max(img.width,img.height));canvas.width=size;canvas.height=size;}
+  function render(){
+    if(!img)return;
+    const size=canvas.width;
+    const s=Math.min(img.width,img.height);
+    const sx=(img.width-s)/2, sy=(img.height-s)/2;
+    ctx.clearRect(0,0,size,size);
+    ctx.drawImage(img,sx,sy,s,s,0,0,size,size);
+    const data=ctx.getImageData(0,0,size,size);
+    const d=data.data;
+    let cLo=RED,cHi=BLUE;
+    if(mode==='br'){cLo=BLUE;cHi=RED;}
+    if(mode==='contrast'){cLo=[10,10,18];cHi=BLUE;}
+    for(let i=0;i<d.length;i+=4){
+      let lum=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+      lum=(lum-128)*con+128+bri; lum=Math.max(0,Math.min(255,lum));
+      const t=lum/255;
+      d[i]=cLo[0]+(cHi[0]-cLo[0])*t;
+      d[i+1]=cLo[1]+(cHi[1]-cLo[1])*t;
+      d[i+2]=cLo[2]+(cHi[2]-cLo[2])*t;
+    }
+    ctx.putImageData(data,0,0);
+  }
+  // 캔버스 결과를 <img>로 미러링 → iOS에서 길게 눌러 "사진 저장" 가능. (무거우므로 조작이 끝났을 때만 호출)
+  function syncImg(){ if(img) resultImg.src = canvas.toDataURL('image/png'); }
+  document.getElementById('modes').addEventListener('click',e=>{
+    if(e.target.tagName!=='BUTTON')return;
+    document.querySelectorAll('#modes button').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active'); mode=e.target.dataset.mode; render(); syncImg();
+  });
+  const briEl=document.getElementById('bri'),conEl=document.getElementById('con');
+  briEl.addEventListener('input',e=>{bri=+e.target.value;document.getElementById('briVal').textContent=bri;render();});
+  conEl.addEventListener('input',e=>{con=+e.target.value/100;document.getElementById('conVal').textContent=con.toFixed(1);render();});
+  briEl.addEventListener('change',syncImg);
+  conEl.addEventListener('change',syncImg);
+  document.getElementById('dl').addEventListener('click',()=>{
+    if(!img){ alert('먼저 사진을 올려 주세요.'); return; }
+    canvas.toBlob(async(blob)=>{
+      if(!blob){ alert('이미지를 만들지 못했어요. 다시 시도해 주세요.'); return; }
+      const file=new File([blob],'duotone-profile.png',{type:'image/png'});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        try{ await navigator.share({files:[file],title:'STOLEN RED, FREE BLUE'}); return; }
+        catch(err){ if(err.name==='AbortError') return; }
+      }
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.download='duotone-profile.png'; a.href=url; a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),2000);
+      savehint.classList.add('show');
+    },'image/png');
+  });
+  document.getElementById('reset').addEventListener('click',()=>{
+    img=null; stage.classList.remove('show'); drop.style.display='block';
+    fileInput.value=''; bri=0; con=1.0; mode='rb';
+    briEl.value=0; conEl.value=100;
+    document.getElementById('briVal').textContent='0';
+    document.getElementById('conVal').textContent='1.0';
+    savehint.classList.remove('show');
+    document.querySelectorAll('#modes button').forEach((b,i)=>b.classList.toggle('active',i===0));
+  });
+</script>
+</body>
+</html>
