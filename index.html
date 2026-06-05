@@ -126,12 +126,12 @@
         <input type="range" id="amp" min="0" max="100" value="100">
       </div>
       <div class="row">
-        <div class="label"><span>밝기</span><span id="briVal">8</span></div>
-        <input type="range" id="bri" min="-80" max="80" value="8">
+        <div class="label"><span>밝기</span><span id="briVal">30</span></div>
+        <input type="range" id="bri" min="-80" max="80" value="30">
       </div>
       <div class="row">
-        <div class="label"><span>대비</span><span id="conVal">1.0</span></div>
-        <input type="range" id="con" min="50" max="220" value="95">
+        <div class="label"><span>대비</span><span id="conVal">1.5</span></div>
+        <input type="range" id="con" min="50" max="220" value="150">
       </div>
     </div>
     <div class="actions">
@@ -186,7 +186,7 @@
   const resultImg=document.getElementById('resultImg');
   const savehint=document.getElementById('savehint');
   const RED=[255,0,51], BLUE=[0,204,255];
-  let img=null, mode='soft', bri=8, con=0.95, amp=1.0;
+  let img=null, mode='soft', bri=30, con=1.5, amp=1.0;
 
   fileInput.addEventListener('change',e=>loadFile(e.target.files[0]));
   ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
@@ -280,10 +280,10 @@
   });
   document.getElementById('reset').addEventListener('click',()=>{
     img=null; stage.classList.remove('show'); drop.style.display='block';
-    fileInput.value=''; bri=8; con=0.95; mode='soft'; amp=1.0;
-    briEl.value=8; conEl.value=95; ampEl.value=100;
-    document.getElementById('briVal').textContent='8';
-    document.getElementById('conVal').textContent='1.0';
+    fileInput.value=''; bri=30; con=1.5; mode='soft'; amp=1.0;
+    briEl.value=30; conEl.value=150; ampEl.value=100;
+    document.getElementById('briVal').textContent='30';
+    document.getElementById('conVal').textContent='1.5';
     document.getElementById('ampVal').textContent='100%';
     savehint.classList.remove('show');
     document.querySelectorAll('#modes button').forEach((b,i)=>b.classList.toggle('active',i===0));
