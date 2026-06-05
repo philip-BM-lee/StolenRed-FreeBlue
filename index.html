@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STOLEN RED, FREE BLUE — 6·3 / 6·5 저항</title>
+<title>STOLEN RED, BROKEN BLUE — 6·3 / 6·5 저항</title>
 
 <!-- 링크 미리보기 (카톡·인스타·트위터·페북) -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="STOLEN RED, FREE BLUE">
-<meta property="og:description" content="빼앗긴 한 표 · 끌려간 자유 — 6·3 투표용지 부족 사태와 6·5 강제 연행에 저항하는 프로필 색 운동. 사진을 올려 듀오톤 프로필을 만드세요.">
+<meta property="og:title" content="STOLEN RED, BROKEN BLUE">
+<meta property="og:description" content="빼앗긴 한 표 · 부서진 자유 — 6·3 투표용지 부족 사태와 6·5 강제 연행에 저항하는 프로필 색 운동. 사진을 올려 듀오톤 프로필을 만드세요.">
 <meta property="og:image" content="https://philip-bm-lee.github.io/StolenRed-FreeBlue/og.png">
 <meta property="og:image:width" content="1024">
 <meta property="og:image:height" content="540">
 <meta property="og:url" content="https://philip-bm-lee.github.io/StolenRed-FreeBlue/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="STOLEN RED, FREE BLUE">
-<meta name="twitter:description" content="빼앗긴 한 표 · 끌려간 자유 — 프로필 색 저항 운동">
+<meta name="twitter:title" content="STOLEN RED, BROKEN BLUE">
+<meta name="twitter:description" content="빼앗긴 한 표 · 부서진 자유 — 프로필 색 저항 운동">
 <meta name="twitter:image" content="https://philip-bm-lee.github.io/StolenRed-FreeBlue/og.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+KR:wght@400;700;900&display=swap');
@@ -99,8 +99,8 @@
 <div class="wrap">
   <header>
     <span class="kicker">SOLIDARITY DUOTONE · 6·3 / 6·5</span>
-    <h1><span class="r">STOLEN RED</span><br><span class="b">FREE BLUE</span></h1>
-    <p class="slogan-kr"><span class="r">빼앗긴 한 표</span> · <span class="b">끌려간 자유</span></p>
+    <h1><span class="r">STOLEN RED</span><br><span class="b">BROKEN BLUE</span></h1>
+    <p class="slogan-kr"><span class="r">빼앗긴 한 표</span> · <span class="b">부서진 자유</span></p>
     <p class="sub">사진을 올리면 <b>두 가지 색</b>으로 변환돼요. 인스타·카톡 프로필에 그대로 쓰세요. 모든 처리는 <b>이 기기 안에서만</b> 일어나고, 사진은 어디로도 전송되지 않아요.</p>
     <div class="hexbar">
       <div class="chip r">#FF0063</div>
@@ -159,8 +159,8 @@
         <div class="d">투표용지의 색. 부족 사태로 침해당한 참정권, 행사되지 못한 한 표.</div>
       </div>
       <div class="cm blue">
-        <div class="en">FREE BLUE</div>
-        <div class="t">끌려간 자유</div>
+        <div class="en">BROKEN BLUE</div>
+        <div class="t">부서진 자유</div>
         <div class="code">#<b>65</b>CCFF</div>
         <div class="d">강제로 연행된 시민. 짓밟힌 집회의 자유와 시민의 권리.</div>
       </div>
@@ -279,7 +279,7 @@
       if(!blob){ alert('이미지를 만들지 못했어요. 다시 시도해 주세요.'); return; }
       const file=new File([blob],'duotone-profile.png',{type:'image/png'});
       if(navigator.canShare && navigator.canShare({files:[file]})){
-        try{ await navigator.share({files:[file],title:'STOLEN RED, FREE BLUE'}); return; }
+        try{ await navigator.share({files:[file],title:'STOLEN RED, BROKEN BLUE'}); return; }
         catch(err){ if(err.name==='AbortError') return; }
       }
       const url=URL.createObjectURL(blob);
